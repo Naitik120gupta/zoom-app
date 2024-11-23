@@ -14,21 +14,21 @@ SECRET_KEY = 'django-insecure-du4fjkddn04$+yk@c%d(cghou(uew=i47ypz!1)r1cpgh$7m-c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'channels',
-    'agora',
+    # 'agora',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'social_django',
+    # 'social_django',
     'rest_framework',
     'rest_framework.authtoken',
     'meeting'
@@ -74,7 +74,7 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 
 WSGI_APPLICATION = 'docdoom.wsgi.application'
-ASGI_APPLICATION = 'docdoom.asgi.application'
+# ASGI_APPLICATION = 'docdoom.asgi.application'
 
 
 # Database

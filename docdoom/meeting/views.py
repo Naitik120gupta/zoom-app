@@ -6,6 +6,11 @@ from django.conf import settings
 import jwt
 import datetime
 from django.contrib.auth.hashers import check_password
+import os
+import time
+import json
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 class RegisterView(APIView):

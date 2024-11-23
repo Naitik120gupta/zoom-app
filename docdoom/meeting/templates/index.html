@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Meeting</title>
+    <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        #video-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .video {
+            width: 300px;
+            height: 200px;
+            background-color: black;
+            border: 2px solid #ddd;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Video Meeting</h1>
+    <div>
+        <button id="join">Join Meeting</button>
+        <button id="leave">Leave Meeting</button>
+    </div>
+    <div id="video-container">
+        <div id="local-stream" class="video"></div>
+        <!-- Remote streams will be added dynamically -->
+    </div>
+
+    <script>
+        const APP_ID = "YOUR_AGORA_APP_ID"; // Replace with your Agora App ID
+        const CHANNEL = "testChannel"; // Replace with your channel name
+        const TOKEN = "YOUR_AGORA_TOKEN"; // Replace with the generated token
+        const USER_ID = Math.floor(Math.random() * 10000); // Random user ID
+
+        let client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+        let localStream;
+
+        document.getElementById("join").onclick = async () => {
+            // Initialize Agora client
+            client.init(APP_ID, () => {
+                console.log("AgoraRTC client initialized");
+            });
+
+            // Join the channel
+            client.join(TOKEN, CHANNEL, USER_ID, async (uid) => {
+                console.log("User " + uid + " joined channel " + CHANNEL);
+
+                // Create and initialize local stream
+                localStream = AgoraRTC.createStream({
+                    streamID: uid,
+                    audio: true,
+                    video: true,
+                    screen: false,
+                });
+
+                localStream.init(() => {
+                    console.log("Local stream initialized");
+                    localStream.play("local-stream");
+                    client.publish(localStream, (err) => console.error(err));
+                });
+
+                // Listen for remote streams
+                client.on("stream-added", (evt) => {
+                    const remoteStream = evt.stream;
+                    console.log("Remote stream added: " + remoteStream.getId());
+
+                    client.subscribe(remoteStream, (err) => {
+                        console.error("Subscribe stream error: ", err);
+                    });
+                });
+
+                client.on("stream-subscribed", (evt) => {
+                    const remoteStream = evt.stream;
+                    const remoteId = `remote-stream-${remoteStream.getId()}`;
+                    const videoContainer = document.getElementById("video-container");
+
+                    // Create a new video container for the remote stream
+                    const remoteDiv = document.createElement("div");
+                    remoteDiv.id = remoteId;
+                    remoteDiv.className = "video";
+                    videoContainer.appendChild(remoteDiv);
+
+                    // Play remote stream
+                    remoteStream.play(remoteId);
+                });
+            });
+        };
+
+        document.getElementById("leave").onclick = () => {
+            if (localStream) {
+                localStream.close();
+                localStream.stop();
+            }
+            client.leave(() => {
+                console.log("Left the channel");
+                document.getElementById("local-stream").innerHTML = "";
+                document.querySelectorAll("[id^='remote-stream-']").forEach((el) => el.remove());
+            });
+        };
+    </script>
+</body>
+</html>

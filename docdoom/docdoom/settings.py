@@ -20,6 +20,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    'agora',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -30,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'meeting'
+
 ]
 
 MIDDLEWARE = [

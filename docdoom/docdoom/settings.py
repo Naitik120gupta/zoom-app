@@ -69,8 +69,8 @@ REST_FRAMEWORK = {
     ),
 }
 
-LOGIN_REDIRECT_URL = '/' 
-LOGOUT_REDIRECT_URL = '/login/'
+# LOGIN_REDIRECT_URL = '/' 
+# LOGOUT_REDIRECT_URL = '/login/'
 
 
 WSGI_APPLICATION = 'docdoom.wsgi.application'
